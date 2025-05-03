@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 class DataDialog extends StatefulWidget {
   const DataDialog({super.key});
 
@@ -11,12 +10,29 @@ class DataDialog extends StatefulWidget {
 }
 
 class _DataDialogState extends State<DataDialog> {
-  late Future<List<Map<String, dynamic>>> _dataFuture;
+  List<Map<String, dynamic>> _data = [];
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _dataFuture = _fetchData();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final data = await _fetchData();
+      setState(() {
+        _data = data;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Error loading data: $e';
+      });
+    }
   }
 
   Future<List<Map<String, dynamic>>> _fetchData() async {
@@ -27,7 +43,6 @@ class _DataDialogState extends State<DataDialog> {
     final dataSnapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
-
         .collection('data')
         .get();
     return dataSnapshot.docs.map((doc) {
@@ -38,25 +53,56 @@ class _DataDialogState extends State<DataDialog> {
   }
 
   Future<void> _deleteData(String documentId) async {
-
     final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
-    if (user != null) {
-          await FirebaseFirestore.instance
+    bool confirmDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: const Text('Are you sure you want to delete this item?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+      },
+    ) ??
+        false;
+
+    if (!confirmDelete) return;
+
+    try {
+      await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
-                  .collection('data')
+          .collection('data')
           .doc(documentId)
           .delete();
-        setState(() {
-          _dataFuture = _fetchData();
-      });
+      _loadData(); // Refresh data after delete
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Data deleted successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting data: $e')),
+      );
+      print('Error deleting data: $e');
     }
   }
 
   Future<void> _editData(Map<String, dynamic> item) async {
-    TextEditingController nameController = TextEditingController(text: item['name']);
-    TextEditingController phoneController = TextEditingController(text: item['phone']);
+    TextEditingController nameController =
+    TextEditingController(text: item['name']);
+    TextEditingController phoneController =
+    TextEditingController(text: item['phone']);
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
@@ -69,8 +115,14 @@ class _DataDialogState extends State<DataDialog> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                TextField(controller: nameController, decoration: const InputDecoration(hintText: 'Name')),
-                TextField(controller: phoneController, decoration: const InputDecoration(hintText: 'Phone')),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(hintText: 'Name'),
+                ),
+                TextField(
+                  controller: phoneController,
+                  decoration: const InputDecoration(hintText: 'Phone'),
+                ),
               ],
             ),
           ),
@@ -84,12 +136,24 @@ class _DataDialogState extends State<DataDialog> {
             TextButton(
               child: const Text('Save'),
               onPressed: () async {
-                await FirebaseFirestore.instance.collection('users').doc(user.uid).collection('data').doc(item['documentId']).update({
-                  'name': nameController.text,
-                  'phone': phoneController.text,
-                });
-                setState(() {_dataFuture = _fetchData();});
-                Navigator.of(context).pop();
+                try {
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(user.uid)
+                      .collection('data')
+                      .doc(item['documentId'])
+                      .update({
+                    'name': nameController.text,
+                    'phone': phoneController.text,
+                  });
+                  _loadData(); // Refresh data after edit
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error editing data: $e')),
+                  );
+                  print('Error editing data: $e');
+                }
               },
             ),
           ],
@@ -100,40 +164,78 @@ class _DataDialogState extends State<DataDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Ηι Data'),
-      content: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _dataFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          }
-          if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Text('No data available.');
-          }
-          final dataList = snapshot.data!;
-          return SizedBox(width: double.maxFinite, height: 300, child: ListView.builder(itemCount: dataList.length, itemBuilder: (context, index) {
-            final item = dataList[index];
-            return ListTile(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('${item['name']}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text('${item['phone']}'),
-                ],
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+          minHeight: 150,
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('My Data', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Expanded(
+              child: _errorMessage != null
+                  ? Center(child: Text(_errorMessage!))
+                  : _isLoading
+                  ? _buildLoadingPlaceholder()
+                  : _data.isEmpty
+                  ? const Center(child: Text('No data available.'))
+                  : ListView.builder(
+                itemCount: _data.length,
+                itemBuilder: (context, index) {
+                  final item = _data[index];
+                  return ListTile(
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${item['name']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text('${item['phone']}'),
+                      ],
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () => _editData(item),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _deleteData(item['documentId']),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(icon: const Icon(Icons.edit), onPressed: () => _editData(item)),
-                  IconButton(icon: const Icon(Icons.delete), onPressed: () => _deleteData(item['documentId'])),
-                ],
-              ),
-            );
-          })
-          );
-        },
+            ),
+          ],
+        ),
       ),
     );
   }
+
+  Widget _buildLoadingPlaceholder() {
+    return ListView.builder(
+      itemCount: 3,
+      itemBuilder: (context, index) {
+        return const ListTile(
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 10, width: 100, child: DecoratedBox(decoration: BoxDecoration(color: Colors.grey))),
+              SizedBox(height: 5),
+              SizedBox(height: 10, width: 150, child: DecoratedBox(decoration: BoxDecoration(color: Colors.grey))),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 }

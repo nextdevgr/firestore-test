@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'home_screen.dart'; // Η HomeScreen θα είναι η επόμενη οθόνη αφού ο χρήστης συνδεθεί
-import 'register_screen.dart'; // Εισαγωγή της RegisterScreen για τη δημιουργία νέου λογαριασμού
+import 'home_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,7 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text,
         password: _passwordController.text,
       );
-      // Αν η σύνδεση είναι επιτυχής, μεταφερόμαστε στην HomeScreen
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -77,7 +76,6 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 20),
             TextButton(
               onPressed: () {
-                // Μεταφορά στην οθόνη εγγραφής (RegisterScreen)
                 if (!mounted) return;
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => RegisterScreen()),

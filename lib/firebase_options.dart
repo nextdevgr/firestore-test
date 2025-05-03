@@ -41,46 +41,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyACH6kHBWl2fUjjv0F8Dyvyx_TuAOJ4rac',
-    appId: '1:399437922547:web:e6b8bd74256f21b62ef786',
-    messagingSenderId: '399437922547',
-    projectId: 'firestore-720bc',
-    authDomain: 'firestore-720bc.firebaseapp.com',
-    storageBucket: 'firestore-720bc.firebasestorage.app',
+    apiKey: '',
+    appId: '',
+    messagingSenderId: '',
+    projectId: '',
+    authDomain: '',
+    storageBucket: '',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAwbQvuGKuT9gNk9tiMDING-zAsXwRAvsw',
-    appId: '1:399437922547:android:b794b973b6d014692ef786',
-    messagingSenderId: '399437922547',
-    projectId: 'firestore-720bc',
-    storageBucket: 'firestore-720bc.firebasestorage.app',
+    apiKey: '',
+    appId: '',
+    messagingSenderId: '',
+    projectId: '',
+    storageBucket: '',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCeJv300mODqs4UyDGfC6MTYRinV2ZUL3M',
-    appId: '1:399437922547:ios:62e65a8ae7689a082ef786',
-    messagingSenderId: '399437922547',
-    projectId: 'firestore-720bc',
-    storageBucket: 'firestore-720bc.firebasestorage.app',
-    iosBundleId: 'com.q.q.qqq',
+    apiKey: '',
+    appId: '',
+    messagingSenderId: '',
+    projectId: '',
+    storageBucket: '',
+    iosBundleId: '',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCeJv300mODqs4UyDGfC6MTYRinV2ZUL3M',
-    appId: '1:399437922547:ios:62e65a8ae7689a082ef786',
-    messagingSenderId: '399437922547',
-    projectId: 'firestore-720bc',
-    storageBucket: 'firestore-720bc.firebasestorage.app',
-    iosBundleId: 'com.q.q.qqq',
+    apiKey: '',
+    appId: '',
+    messagingSenderId: '',
+    projectId: '',
+    storageBucket: '',
+    iosBundleId: '',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyACH6kHBWl2fUjjv0F8Dyvyx_TuAOJ4rac',
-    appId: '1:399437922547:web:62b576f129e0f75b2ef786',
-    messagingSenderId: '399437922547',
-    projectId: 'firestore-720bc',
-    authDomain: 'firestore-720bc.firebaseapp.com',
-    storageBucket: 'firestore-720bc.firebasestorage.app',
+    apiKey: '',
+    appId: '',
+    messagingSenderId: '',
+    projectId: '',
+    authDomain: '',
+    storageBucket: '',
   );
+
 }

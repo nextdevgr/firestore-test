@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/login_screen.dart';
-import 'screens/home_screen.dart';  // Assuming you have a HomeScreen for authenticated users
+import 'screens/home_screen.dart';
 
 const firebaseConfig = FirebaseOptions(
   apiKey: 'AIzaSyACH6kHBWl2fUjjv0F8Dyvyx_TuAOJ4rac',
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'My Firestore App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      // Instead of initialRoute, we will navigate to a screen based on the user state dynamically
+
       home: AuthGate(),
     );
   }
@@ -39,14 +39,14 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Check if the user is logged in
+
     User? user = FirebaseAuth.instance.currentUser;
 
-    // Return the appropriate screen based on authentication status
+
     if (user == null) {
-      return LoginScreen(); // Show login screen if not logged in
+      return LoginScreen();
     } else {
-      return HomeScreen(); // Show home screen if logged in
+      return HomeScreen();
     }
   }
 }
