@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Firestore App',
+      title: 'My Firestore App',
       theme: ThemeData(primarySwatch: Colors.blue),
       // Instead of initialRoute, we will navigate to a screen based on the user state dynamically
       home: AuthGate(),
