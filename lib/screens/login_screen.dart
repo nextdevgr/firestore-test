@@ -4,6 +4,8 @@ import 'home_screen.dart'; // Η HomeScreen θα είναι η επόμενη ο
 import 'register_screen.dart'; // Εισαγωγή της RegisterScreen για τη δημιουργία νέου λογαριασμού
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -24,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
       // Αν η σύνδεση είναι επιτυχής, μεταφερόμαστε στην HomeScreen
+      if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
@@ -34,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (error.toString().contains('user-not-found')) {
         message = 'No user found with this email.';
       }
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),
         backgroundColor: Colors.red,
@@ -74,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextButton(
               onPressed: () {
                 // Μεταφορά στην οθόνη εγγραφής (RegisterScreen)
+                if (!mounted) return;
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => RegisterScreen()),
                 );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'screens/register_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';  // Assuming you have a HomeScreen for authenticated users
 
@@ -22,6 +21,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,6 +35,8 @@ class MyApp extends StatelessWidget {
 }
 
 class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Check if the user is logged in

@@ -5,17 +5,21 @@ import '../dialogs/data_dialog.dart';
 import 'login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Get the current user from FirebaseAuth
     User? user = FirebaseAuth.instance.currentUser;
 
     // Function to show the user data dialog
-    Future<void> _showUserDataDialog(BuildContext context) async {
+    Future<void> showUserDataDialog(BuildContext context) async {
       showDialog(
         context: context,
         builder: (ctx) {
-          return DataDialog(); // Using the DataDialog widget
+          return DataDialog(
+              key: ValueKey('dataDialog')
+          ); // Using the DataDialog widget
         },
       );
     }
@@ -30,6 +34,7 @@ class HomeScreen extends StatelessWidget {
             icon: Icon(Icons.exit_to_app),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
+              if (!context.mounted) return;
               // Navigate to the login screen and remove all previous routes from the stack
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -40,7 +45,7 @@ class HomeScreen extends StatelessWidget {
           // Eye button to show the data dialog
           IconButton(
             icon: Icon(Icons.remove_red_eye),
-            onPressed: () => _showUserDataDialog(context),
+            onPressed: () => showUserDataDialog(context),
           ),
         ],
       ),

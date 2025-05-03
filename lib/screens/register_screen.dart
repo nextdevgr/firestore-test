@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'home_screen.dart'; // Επιστροφή στην HomeScreen μετά την εγγραφή
 
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -19,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     if (_passwordController.text != _confirmPasswordController.text) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Passwords do not match!'),
         backgroundColor: Colors.red,
@@ -35,13 +38,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: _passwordController.text,
       );
       // Αν η εγγραφή είναι επιτυχής, μεταφερόμαστε στην HomeScreen
+      if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } catch (error) {
       String message = 'An error occurred, please try again later.';
       if (error.toString().contains('email-already-in-use')) {
+        
         message = 'This email is already registered.';
+      if (!mounted) return;
       }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),

@@ -7,6 +7,8 @@ class UserForm extends StatelessWidget {
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
 
+  UserForm({super.key});
+
   Future<void> _submitData(BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -20,6 +22,7 @@ class UserForm extends StatelessWidget {
       );
       return;
     }
+    if (!context.mounted) return;
 
     if (_formKey.currentState!.validate()) {
       try {
@@ -30,6 +33,7 @@ class UserForm extends StatelessWidget {
           'timestamp': FieldValue.serverTimestamp(),
         });
 
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Data submitted successfully!'),
@@ -41,6 +45,7 @@ class UserForm extends StatelessWidget {
         nameController.clear();
         phoneController.clear();
       } catch (error) {
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to submit data. Please try again later.'),
